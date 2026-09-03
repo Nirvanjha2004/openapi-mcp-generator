@@ -200,7 +200,9 @@ function buildUrl(baseUrl, pathTemplate, args, schema, method) {
       urlPath = urlPath.replace(m, encodeURIComponent(String(args[key])));
     }
   }
-  const url = new URL(urlPath, baseUrl.endsWith("/") ? baseUrl : baseUrl + "/");
+  const base = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
+  const cleanPath = urlPath.startsWith("/") ? urlPath.slice(1) : urlPath;
+  const url = new URL(cleanPath, base);
   const pathParamNames = pathParams.map(m => m.slice(1, -1));
   const params = new URLSearchParams();
   for (const [k, v] of Object.entries(args)) {

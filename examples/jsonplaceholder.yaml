@@ -1,0 +1,254 @@
+openapi: 3.0.3
+info:
+  title: JSONPlaceholder API
+  version: 1.0.0
+  description: |
+    Real public fake REST API for demos - https://jsonplaceholder.typicode.com
+    No auth required. 100% free and stable. Perfect for MCP demos.
+
+servers:
+  - url: https://jsonplaceholder.typicode.com
+    description: Production
+
+paths:
+  /posts:
+    get:
+      operationId: listPosts
+      summary: List posts
+      description: Get a list of posts with optional pagination
+      parameters:
+        - name: _limit
+          in: query
+          required: false
+          description: Number of results to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: _page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: userId
+          in: query
+          required: false
+          description: Filter by user ID
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+
+    post:
+      operationId: createPost
+      summary: Create a post
+      description: Create a new post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewPost"
+      responses:
+        "201":
+          description: Created post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+
+  /posts/{id}:
+    get:
+      operationId: getPostById
+      summary: Get post by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Single post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "404":
+          description: Not found
+    put:
+      operationId: updatePost
+      summary: Update a post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewPost"
+      responses:
+        "200":
+          description: Updated post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+    delete:
+      operationId: deletePost
+      summary: Delete a post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+
+  /users:
+    get:
+      operationId: listUsers
+      summary: List users
+      description: Get all users
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    get:
+      operationId: getUserById
+      summary: Get user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Single user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /todos:
+    get:
+      operationId: listTodos
+      summary: List todos
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: completed
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Todo"
+
+  /todos/{id}:
+    get:
+      operationId: getTodoById
+      summary: Get todo by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Single todo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+
+components:
+  schemas:
+    Post:
+      type: object
+      required: [id, title, body, userId]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+        userId:
+          type: integer
+    NewPost:
+      type: object
+      required: [title, body, userId]
+      properties:
+        title:
+          type: string
+          description: Post title
+        body:
+          type: string
+          description: Post content
+        userId:
+          type: integer
+          description: Author user ID
+    User:
+      type: object
+      required: [id, name, username, email]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        website:
+          type: string
+    Todo:
+      type: object
+      required: [id, title, completed, userId]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        completed:
+          type: boolean
+        userId:
+          type: integer

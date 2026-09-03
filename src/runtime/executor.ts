@@ -133,7 +133,11 @@ function buildUrl(
     path = path.replace(match, encodeURIComponent(String(value)));
   }
 
-  const url = new URL(path, baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`);
+  // Fix: preserve baseUrl path (e.g. /v2) when path starts with '/'.
+  // new URL("/pet/findByStatus", "https://host/v2/") would discard /v2 without this.
+  const base = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+  const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+  const url = new URL(cleanPath, base);
 
   const pathParamNames = pathParams.map(m => m.slice(1, -1));
   const queryParams = new URLSearchParams();

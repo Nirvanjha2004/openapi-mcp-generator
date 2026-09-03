@@ -6,7 +6,15 @@
       "command": ["node", "generated/petstore-mcp/index.js"],
       "enabled": true,
       "environment": {
-        "BASE_URL": "https://api.example.com/v1"
+        "BASE_URL": "https://petstore.swagger.io/v2"
+      }
+    },
+    "jsonplaceholder": {
+      "type": "local",
+      "command": ["node", "generated/jsonplaceholder-mcp/index.js"],
+      "enabled": true,
+      "environment": {
+        "BASE_URL": "https://jsonplaceholder.typicode.com"
       }
     }
   },
