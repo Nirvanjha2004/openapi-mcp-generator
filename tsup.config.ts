@@ -12,12 +12,4 @@ export default defineConfig({
   sourcemap: true,
   target: "node18",
   shims: true,
-  banner: {
-    js: '#!/usr/bin/env node',
-  },
-  esbuildOptions(options) {
-    options.banner = {
-      js: '#!/usr/bin/env node',
-    };
-  },
 });
