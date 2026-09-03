@@ -1,0 +1,39 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Simple JSON Example",
+    "version": "1.0.0",
+    "description": "Minimal JSON spec for testing remote/file parsing."
+  },
+  "servers": [{ "url": "https://api.example.com" }],
+  "paths": {
+    "/hello": {
+      "get": {
+        "operationId": "sayHello",
+        "summary": "Say hello",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Name to greet"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Greeting",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
