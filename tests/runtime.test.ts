@@ -102,16 +102,25 @@ describe("runtime/executor - execute with mocked fetch", () => {
         status: response.status,
         statusText: response.statusText,
         headers: {
-          get: (name: string) => (name.toLowerCase() === "content-type" ? (response.contentType ?? "application/json") : null),
+          get: (name: string) =>
+            name.toLowerCase() === "content-type"
+              ? (response.contentType ?? "application/json")
+              : null,
         },
         json: async () => response.body,
-        text: async () => (typeof response.body === "string" ? response.body : JSON.stringify(response.body)),
+        text: async () =>
+          typeof response.body === "string" ? response.body : JSON.stringify(response.body),
       } as unknown as Response;
     });
   }
 
   it("executes GET with path + query + header mapping", async () => {
-    const fetchMock = mockFetch({ ok: true, status: 200, statusText: "OK", body: { id: "123", name: "Fido" } });
+    const fetchMock = mockFetch({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      body: { id: "123", name: "Fido" },
+    });
     const tool = makeTool();
     const executor = createExecutor(
       {
@@ -145,7 +154,12 @@ describe("runtime/executor - execute with mocked fetch", () => {
   });
 
   it("executes POST with JSON body", async () => {
-    const fetchMock = mockFetch({ ok: true, status: 201, statusText: "Created", body: { id: "1" } });
+    const fetchMock = mockFetch({
+      ok: true,
+      status: 201,
+      statusText: "Created",
+      body: { id: "1" },
+    });
     const tool: McpToolDefinition = {
       name: "createPet",
       description: "Create",
@@ -179,10 +193,20 @@ describe("runtime/executor - execute with mocked fetch", () => {
   });
 
   it("handles HTTP error status gracefully", async () => {
-    const fetchMock = mockFetch({ ok: false, status: 404, statusText: "Not Found", body: { error: "not found" } });
+    const fetchMock = mockFetch({
+      ok: false,
+      status: 404,
+      statusText: "Not Found",
+      body: { error: "not found" },
+    });
     const tool = makeTool();
     const executor = createExecutor(
-      { baseUrl: "https://api.example.com", timeout: 5000, retries: 0, toolMap: new Map([[tool.name, tool]]) },
+      {
+        baseUrl: "https://api.example.com",
+        timeout: 5000,
+        retries: 0,
+        toolMap: new Map([[tool.name, tool]]),
+      },
       { fetchImpl: fetchMock as unknown as typeof fetch }
     );
     const result = await executor.execute("listPets", { petId: "bad" });
@@ -215,7 +239,12 @@ describe("runtime/executor - execute with mocked fetch", () => {
 
     const tool = makeTool();
     const executor = createExecutor(
-      { baseUrl: "https://api.example.com", timeout: 10, retries: 0, toolMap: new Map([[tool.name, tool]]) },
+      {
+        baseUrl: "https://api.example.com",
+        timeout: 10,
+        retries: 0,
+        toolMap: new Map([[tool.name, tool]]),
+      },
       { fetchImpl: abortFetch as unknown as typeof fetch }
     );
     const result = await executor.execute("listPets", { petId: "1" });
@@ -241,7 +270,12 @@ describe("runtime/executor - execute with mocked fetch", () => {
 
     const tool = makeTool();
     const executor = createExecutor(
-      { baseUrl: "https://api.example.com", timeout: 5000, retries: 1, toolMap: new Map([[tool.name, tool]]) },
+      {
+        baseUrl: "https://api.example.com",
+        timeout: 5000,
+        retries: 1,
+        toolMap: new Map([[tool.name, tool]]),
+      },
       { fetchImpl: flakyFetch as unknown as typeof fetch }
     );
     const result = await executor.execute("listPets", { petId: "1" });
@@ -259,13 +293,23 @@ describe("runtime/executor - execute with mocked fetch", () => {
     );
     // need valid baseUrl for URL construction
     executor.execute = (await import("../src/runtime/executor.js")).createExecutor(
-      { baseUrl: "https://api.example.com", timeout: 5000, retries: 0, toolMap: new Map([[tool.name, tool]]) },
+      {
+        baseUrl: "https://api.example.com",
+        timeout: 5000,
+        retries: 0,
+        toolMap: new Map([[tool.name, tool]]),
+      },
       { fetchImpl: fetchMock as unknown as typeof fetch }
     ).execute;
 
     // directly test via createExecutor with env
     const exec2 = createExecutor(
-      { baseUrl: "https://api.example.com", timeout: 5000, retries: 0, toolMap: new Map([[tool.name, tool]]) },
+      {
+        baseUrl: "https://api.example.com",
+        timeout: 5000,
+        retries: 0,
+        toolMap: new Map([[tool.name, tool]]),
+      },
       { fetchImpl: fetchMock as unknown as typeof fetch }
     );
     await exec2.execute("listPets", { petId: "1" });

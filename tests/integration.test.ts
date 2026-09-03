@@ -27,7 +27,10 @@ describe("integration - generateMcpServer", () => {
     expect(files).toContain("README.md");
     expect(files).toContain(".env.example");
 
-    const pkg = JSON.parse(await fs.readFile(path.join(outDir, "package.json"), "utf-8")) as Record<string, unknown>;
+    const pkg = JSON.parse(await fs.readFile(path.join(outDir, "package.json"), "utf-8")) as Record<
+      string,
+      unknown
+    >;
     expect(pkg.name).toBe("test-pet-store");
 
     const serverCode = await fs.readFile(path.join(outDir, "index.js"), "utf-8");
@@ -55,8 +58,6 @@ describe("integration - generateMcpServer", () => {
   });
 
   it("handles missing input gracefully", async () => {
-    await expect(
-      generateMcpServer({ input: "", outputDir: "./tmp" })
-    ).rejects.toThrow();
+    await expect(generateMcpServer({ input: "", outputDir: "./tmp" })).rejects.toThrow();
   });
 });

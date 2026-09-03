@@ -12,7 +12,7 @@ export interface TransformOptions {
 
 export function transformSpecToTools(
   doc: OpenApiDocument,
-  options: TransformOptions = {}
+  _options: TransformOptions = {}
 ): McpToolDefinition[] {
   const tools: McpToolDefinition[] = [];
   const rawNames: string[] = [];
@@ -20,7 +20,9 @@ export function transformSpecToTools(
   for (const [path, methods] of Object.entries(doc.paths)) {
     if (!methods || typeof methods !== "object") continue;
 
-    for (const [methodRaw, operation] of Object.entries(methods as Record<string, OpenApiOperation>)) {
+    for (const [methodRaw, operation] of Object.entries(
+      methods as Record<string, OpenApiOperation>
+    )) {
       const method = methodRaw.toLowerCase() as HttpMethod;
       if (!VALID_METHODS.includes(method)) continue;
       if (!operation || typeof operation !== "object") continue;
@@ -30,14 +32,11 @@ export function transformSpecToTools(
       rawNames.push(name);
 
       const description =
-        op.description?.trim() ||
-        op.summary?.trim() ||
-        `${method.toUpperCase()} ${path}`;
+        op.description?.trim() || op.summary?.trim() || `${method.toUpperCase()} ${path}`;
 
       // Collect parameters: path-level + operation-level (operation overrides)
       const pathLevelParams = (methods as Record<string, unknown>).parameters as
-        | OpenApiOperation["parameters"]
-        | undefined;
+        OpenApiOperation["parameters"] | undefined;
 
       const allParams = [
         ...(Array.isArray(pathLevelParams) ? pathLevelParams : []),
@@ -51,10 +50,16 @@ export function transformSpecToTools(
         const key = `${p.in}:${p.name}`;
         deduped.set(key, p);
       }
-      const parameters = Array.from(deduped.values()) as unknown as import("../types.js").OpenApiParameter[];
+      const parameters = Array.from(
+        deduped.values()
+      ) as unknown as import("../types.js").OpenApiParameter[];
 
       const requestBody = op.requestBody as
-        | { description?: string; required?: boolean; content?: Record<string, { schema?: Record<string, unknown> }> }
+        | {
+            description?: string;
+            required?: boolean;
+            content?: Record<string, { schema?: Record<string, unknown> }>;
+          }
         | undefined;
 
       const inputSchema: JsonSchema = buildInputSchema(
@@ -63,15 +68,16 @@ export function transformSpecToTools(
         Boolean(requestBody?.required)
       );
 
+      const meta: McpToolDefinition["_meta"] =
+        op.operationId !== undefined
+          ? { method, path, operationId: op.operationId }
+          : { method, path };
+
       tools.push({
         name, // will be uniquified below
         description,
         inputSchema,
-        _meta: {
-          method,
-          path,
-          operationId: op.operationId,
-        },
+        _meta: meta,
       });
     }
   }
@@ -85,7 +91,9 @@ export function transformSpecToTools(
   logger.info(`Transformed ${tools.length} operations into MCP tools`);
 
   if (tools.length === 0) {
-    logger.warn("No valid operations found to transform - check that spec has GET/POST/PUT/DELETE/PATCH methods");
+    logger.warn(
+      "No valid operations found to transform - check that spec has GET/POST/PUT/DELETE/PATCH methods"
+    );
   }
 
   return tools;

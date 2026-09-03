@@ -61,7 +61,9 @@ export async function parseSpec(input: string): Promise<ParsedOpenApiSpec> {
     }
 
     if (!api.openapi && !(api as unknown as Record<string, unknown>).swagger) {
-      throw new SpecParseError("Invalid OpenAPI spec: missing 'openapi' or 'swagger' version field");
+      throw new SpecParseError(
+        "Invalid OpenAPI spec: missing 'openapi' or 'swagger' version field"
+      );
     }
 
     if (!api.paths || typeof api.paths !== "object" || Object.keys(api.paths).length === 0) {
@@ -77,7 +79,9 @@ export async function parseSpec(input: string): Promise<ParsedOpenApiSpec> {
     const title = api.info?.title ?? "Generated MCP Server";
     const version = api.info?.version ?? "0.1.0";
 
-    logger.info(`Successfully parsed spec: ${title} v${version} (${Object.keys(api.paths).length} paths)`);
+    logger.info(
+      `Successfully parsed spec: ${title} v${version} (${Object.keys(api.paths).length} paths)`
+    );
 
     return {
       raw: api as unknown as Record<string, unknown>,
@@ -93,7 +97,11 @@ export async function parseSpec(input: string): Promise<ParsedOpenApiSpec> {
     if (message.includes("ENOENT") || message.includes("no such file")) {
       throw new SpecParseError(`Spec file not found: ${input}`, err);
     }
-    if (message.includes("fetch") || message.includes("ECONNREFUSED") || message.includes("ENOTFOUND")) {
+    if (
+      message.includes("fetch") ||
+      message.includes("ECONNREFUSED") ||
+      message.includes("ENOTFOUND")
+    ) {
       throw new SpecParseError(`Failed to fetch remote spec URL: ${input} — ${message}`, err);
     }
     throw new SpecParseError(`Failed to parse OpenAPI spec: ${message}`, err);

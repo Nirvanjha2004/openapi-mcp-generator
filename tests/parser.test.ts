@@ -32,15 +32,20 @@ describe("parser - parseSpec", () => {
     expect(petsGet).toBeDefined();
     // POST /pets has requestBody with Pet schema dereferenced
     const postOp = result.dereferenced.paths["/pets"]?.post;
-    const schema = postOp?.requestBody?.content?.["application/json"]?.schema as Record<string, unknown>;
+    const schema = postOp?.requestBody?.content?.["application/json"]?.schema as Record<
+      string,
+      unknown
+    >;
     expect(schema).toBeDefined();
     // Should have properties, not $ref
     expect(schema.type).toBe("object");
-    expect((schema.properties as Record<string, unknown>)).toHaveProperty("name");
+    expect(schema.properties as Record<string, unknown>).toHaveProperty("name");
   });
 
   it("throws SpecParseError for non-existent file", async () => {
-    await expect(parseSpec("./non-existent-spec.yaml")).rejects.toThrow(/Spec file not found|Failed to parse/);
+    await expect(parseSpec("./non-existent-spec.yaml")).rejects.toThrow(
+      /Spec file not found|Failed to parse/
+    );
   });
 
   it("throws for invalid spec - missing paths", async () => {

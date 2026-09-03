@@ -1,9 +1,6 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
+import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import type { McpToolDefinition } from "../types.js";
 import { createExecutor } from "./executor.js";
 import { logger } from "../utils/logger.js";
@@ -48,7 +45,7 @@ export function createMcpServer(options: McpServerOptions): Server {
 
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
-      tools: tools.map((t) => ({
+      tools: tools.map(t => ({
         name: t.name,
         description: t.description,
         inputSchema: t.inputSchema,
@@ -56,14 +53,17 @@ export function createMcpServer(options: McpServerOptions): Server {
     };
   });
 
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  server.setRequestHandler(CallToolRequestSchema, async request => {
     const toolName = request.params.name;
     const args = (request.params.arguments ?? {}) as Record<string, unknown>;
 
     logger.info(`Tool called: ${toolName} with args: ${JSON.stringify(args)}`);
 
     const result = await executor.execute(toolName, args);
-    return result as unknown as { content: Array<{ type: string; text: string }>; isError?: boolean };
+    return result as unknown as {
+      content: Array<{ type: string; text: string }>;
+      isError?: boolean;
+    };
   });
 
   return server;

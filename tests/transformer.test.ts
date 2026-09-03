@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { deriveToolName, sanitizeToolName, slugify, ensureUniqueNames } from "../src/transformer/naming.js";
+import {
+  deriveToolName,
+  sanitizeToolName,
+  slugify,
+  ensureUniqueNames,
+} from "../src/transformer/naming.js";
 import { buildInputSchema, toJsonSchemaProperty } from "../src/transformer/schema.js";
 import { transformSpecToTools } from "../src/transformer/index.js";
 import type { OpenApiDocument } from "../src/parser/index.js";
@@ -23,7 +28,7 @@ describe("transformer/naming", () => {
 
   it("derives name from method+path fallback", () => {
     const name = deriveToolName(undefined, "get", "/pets/{petId}");
-    expect(name).toBe("get_pets_by_petId");
+    expect(name).toBe("get_pets_by_petid");
   });
 
   it("ensures unique names with suffix", () => {
@@ -63,7 +68,13 @@ describe("transformer/schema", () => {
   it("buildInputSchema maps query/path/header correctly", () => {
     const schema = buildInputSchema(
       [
-        { name: "petId", in: "path", required: true, schema: { type: "string" }, description: "ID" },
+        {
+          name: "petId",
+          in: "path",
+          required: true,
+          schema: { type: "string" },
+          description: "ID",
+        },
         { name: "limit", in: "query", required: false, schema: { type: "integer" } },
         { name: "X-Api-Key", in: "header", required: false, schema: { type: "string" } },
       ],
@@ -134,13 +145,13 @@ describe("transformer/index - transformSpecToTools", () => {
     // /pets GET, POST, /pets/{petId} GET, PUT, DELETE, /pets/{petId}/photos POST, /store/inventory GET = 7? let's count
     // pet store yaml: /pets (2), /pets/{petId} (3), /pets/{petId}/photos (1), /store/inventory (1) = 7
     expect(tools.length).toBe(7);
-    const names = tools.map((t) => t.name);
+    const names = tools.map(t => t.name);
     expect(names).toContain("listPets");
     expect(names).toContain("createPet");
     expect(names).toContain("updatePet");
     expect(names).toContain("getInventory");
-    // fallback name for GET /pets/{petId} (no operationId)
-    expect(names).toContain("get_pets_by_petId");
+    // fallback name for GET /pets/{petId} (no operationId) - lowercased
+    expect(names).toContain("get_pets_by_petid");
   });
 
   it("uses description fallback when summary missing", () => {

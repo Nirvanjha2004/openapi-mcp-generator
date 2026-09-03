@@ -14,10 +14,16 @@ export interface ExecutorOptions {
   fetchImpl?: typeof fetch;
 }
 
-export function createExecutor(config: ExecutorConfig, options: ExecutorOptions = {}) {
+export function createExecutor(
+  config: ExecutorConfig,
+  options: ExecutorOptions = {}
+): { execute: (toolName: string, args: Record<string, unknown>) => Promise<ExecutionResult> } {
   const fetchFn: typeof fetch = options.fetchImpl ?? fetch;
 
-  async function execute(toolName: string, args: Record<string, unknown>): Promise<ExecutionResult> {
+  async function execute(
+    toolName: string,
+    args: Record<string, unknown>
+  ): Promise<ExecutionResult> {
     const tool = config.toolMap.get(toolName);
     if (!tool) {
       return {
@@ -42,12 +48,15 @@ export function createExecutor(config: ExecutorConfig, options: ExecutorOptions 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), config.timeout);
 
-        const response = await fetchFn(url, {
+        const fetchOptions: RequestInit = {
           method: method.toUpperCase(),
           headers: finalHeaders,
-          body: body ? JSON.stringify(body) : undefined,
           signal: controller.signal,
-        });
+        };
+        if (body !== undefined) {
+          fetchOptions.body = JSON.stringify(body);
+        }
+        const response = await fetchFn(url, fetchOptions);
 
         clearTimeout(timeoutId);
 
@@ -80,10 +89,12 @@ export function createExecutor(config: ExecutorConfig, options: ExecutorOptions 
         lastError = err;
         const isAbort = err instanceof Error && err.name === "AbortError";
         const message = err instanceof Error ? err.message : String(err);
-        logger.warn(`Attempt ${attempt + 1} failed for ${toolName}: ${message}${isAbort ? " (timeout)" : ""}`);
+        logger.warn(
+          `Attempt ${attempt + 1} failed for ${toolName}: ${message}${isAbort ? " (timeout)" : ""}`
+        );
         if (attempt < config.retries) {
           // exponential backoff
-          await new Promise((r) => setTimeout(r, 100 * Math.pow(2, attempt)));
+          await new Promise(r => setTimeout(r, 100 * Math.pow(2, attempt)));
           continue;
         }
         const errorText = isAbort
@@ -124,7 +135,7 @@ function buildUrl(
 
   const url = new URL(path, baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`);
 
-  const pathParamNames = pathParams.map((m) => m.slice(1, -1));
+  const pathParamNames = pathParams.map(m => m.slice(1, -1));
   const queryParams = new URLSearchParams();
 
   for (const [key, value] of Object.entries(args)) {
@@ -259,5 +270,5 @@ function buildHeadersAndBody(
 export function extractPathParamNames(path: string): string[] {
   const matches = path.match(/{([^}]+)}/g);
   if (!matches) return [];
-  return matches.map((m) => m.slice(1, -1));
+  return matches.map(m => m.slice(1, -1));
 }

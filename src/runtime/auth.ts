@@ -20,7 +20,8 @@ export function getAuthHeaders(options?: {
   const apiKeyEnvVar = options?.envApiKey ?? "API_KEY";
   const apiKeyHeader = options?.apiKeyHeader ?? "x-api-key";
 
-  const bearer = process.env[bearerEnvVar] ?? process.env["BEARER_TOKEN"] ?? process.env["API_TOKEN"];
+  const bearer =
+    process.env[bearerEnvVar] ?? process.env["BEARER_TOKEN"] ?? process.env["API_TOKEN"];
   if (bearer) {
     headers["Authorization"] = bearer.startsWith("Bearer ") ? bearer : `Bearer ${bearer}`;
   }

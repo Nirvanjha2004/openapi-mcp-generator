@@ -4,7 +4,9 @@ import type { JsonSchema, JsonSchemaProperty, OpenApiParameter } from "../types.
  * Convert an OpenAPI schema object to JSON Schema property.
  * Dereferenced specs have all $refs resolved, but we still handle anyOf/oneOf/allOf passthrough.
  */
-export function toJsonSchemaProperty(schema: Record<string, unknown> | undefined): JsonSchemaProperty {
+export function toJsonSchemaProperty(
+  schema: Record<string, unknown> | undefined
+): JsonSchemaProperty {
   if (!schema) {
     return { type: "string", description: "No schema provided" };
   }
@@ -87,8 +89,11 @@ export function buildInputSchema(
     if (param.in === "cookie") continue; // skip cookies for MCP
     const schema = toJsonSchemaProperty(param.schema as Record<string, unknown> | undefined);
     // Annotate description with source location
-    const inDesc = param.in === "path" ? " (path)" : param.in === "query" ? " (query)" : " (header)";
-    const description = param.description ? `${param.description}${inDesc}` : `Parameter in ${param.in}${inDesc}`;
+    const inDesc =
+      param.in === "path" ? " (path)" : param.in === "query" ? " (query)" : " (header)";
+    const description = param.description
+      ? `${param.description}${inDesc}`
+      : `Parameter in ${param.in}${inDesc}`;
     const prop: JsonSchemaProperty = {
       ...schema,
       description: description || schema.description,
@@ -99,7 +104,8 @@ export function buildInputSchema(
 
   // Map requestBody - only handle application/json
   if (requestBody) {
-    const content = requestBody.content as Record<string, { schema?: Record<string, unknown> }> | undefined;
+    const content = requestBody.content as
+      Record<string, { schema?: Record<string, unknown> }> | undefined;
     let bodySchema: Record<string, unknown> | undefined;
 
     if (content) {

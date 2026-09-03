@@ -45,7 +45,7 @@ export function deriveToolName(
 
 export function ensureUniqueNames(names: string[]): string[] {
   const seen = new Map<string, number>();
-  return names.map((name) => {
+  return names.map(name => {
     const count = seen.get(name) ?? 0;
     if (count === 0) {
       seen.set(name, 1);

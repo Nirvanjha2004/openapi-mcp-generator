@@ -21,7 +21,7 @@ program
   .option("--base-url <url>", "Override base URL for API requests")
   .option("--timeout <ms>", "HTTP request timeout in milliseconds", "10000")
   .option("--retries <count>", "Number of retries for failed requests", "1")
-  .action(async (opts) => {
+  .action(async opts => {
     try {
       const input: string = opts.input;
       const output: string = path.resolve(opts.output);
@@ -79,7 +79,7 @@ program
   .command("validate")
   .description("Validate an OpenAPI spec without generating")
   .requiredOption("-i, --input <spec>", "Input spec path or URL")
-  .action(async (opts) => {
+  .action(async opts => {
     try {
       const { parseSpec } = await import("../parser/index.js");
       const { transformSpecToTools } = await import("../transformer/index.js");

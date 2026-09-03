@@ -128,7 +128,7 @@ Add to your \`claude_desktop_config.json\`:
 
 ## Tools
 
-${tools.map((t) => `- \`${t.name}\` - ${t.description} (${t._meta.method.toUpperCase()} ${t._meta.path})`).join("\n")}
+${tools.map(t => `- \`${t.name}\` - ${t.description} (${t._meta.method.toUpperCase()} ${t._meta.path})`).join("\n")}
 `;
 
   await fs.writeFile(path.join(outputDir, "README.md"), readme, "utf-8");
