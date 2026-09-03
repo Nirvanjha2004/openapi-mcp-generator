@@ -1,0 +1,14 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "petstore": {
+      "type": "local",
+      "command": ["node", "generated/petstore-mcp/index.js"],
+      "enabled": true,
+      "environment": {
+        "BASE_URL": "https://api.example.com/v1"
+      }
+    }
+  },
+  "instructions": ["README.md"]
+}

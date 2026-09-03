@@ -9,4 +9,6 @@ coverage
 coverage
 .nyc_output
 examples/generated
+generated
 test-output
+tmp-test-gen
